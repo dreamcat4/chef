@@ -227,13 +227,13 @@ class Knife < Thor
   end
 
   desc "create_client", "Create a Client"
-  method_options :client => :required, :key => :required
+  method_options :client => :required, :key => :required, :admin => :boolean
   def create_client
     validation_name = ENV["OPSCODE_USER"]
     validation_key =  ENV["OPSCODE_KEY"]
 
     @vr = Chef::REST.new(Chef::Config[:chef_server_url], validation_name, validation_key)
-    @vr.register(options[:client], options[:key])
+    @vr.register(options[:client], options[:key], options[:admin] || false)
     puts "Done."
   end
 

@@ -58,7 +58,7 @@ class Chef
     end
     
     # Register the client 
-    def register(name=Chef::Config[:node_name], destination=Chef::Config[:client_key])
+    def register(name=Chef::Config[:node_name], destination=Chef::Config[:client_key], admin=false)
 
       if File.exists?(destination)
         raise Chef::Exceptions::CannotWritePrivateKey, "I cannot write your private key to #{destination} - check permissions?" unless File.writable?(destination)
@@ -66,11 +66,11 @@ class Chef
 
       # First, try and create a new registration
       begin
-        Chef::Log.info("Registering API Client #{name}")
-        response = post_rest("clients", {:name => name})
+        Chef::Log.info("Registering API Client #{name}, admin => #{admin.inspect}")
+        response = post_rest("clients", {:name => name, :admin => admin})
       rescue Net::HTTPServerException 
         # If that fails, go ahead and try and update it
-        response = put_rest("clients/#{name}", { :name => name, :private_key => true }) 
+        response = put_rest("clients/#{name}", { :name => name, :admin => admin, :private_key => true })
       end
 
       Chef::Log.debug("Registration response: #{response.inspect}")
