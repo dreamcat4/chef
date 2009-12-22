@@ -10,18 +10,22 @@ task :gem do
       Dir.chdir(dir) { sh build_commands[dir] }
   end
 end
+
+def sudo_wrapper(command)
+  `whoami`.strip! == "root" ? "sudo #{command}" : command
+end
  
 desc "Install the chef gems"
 task :install do
   gems.each do |dir|
-    Dir.chdir(dir) { sh "rake install" }
+    Dir.chdir(dir) { sh sudo_wrapper("rake install") }
   end
 end
 
 desc "Uninstall the chef gems"
 task :uninstall do
   gems.reverse.each do |dir|
-    Dir.chdir(dir) { sh "rake uninstall" }
+    Dir.chdir(dir) { sh sudo_wrapper("rake uninstall") }
   end
 end
 

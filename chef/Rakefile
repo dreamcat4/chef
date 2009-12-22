@@ -40,12 +40,16 @@ Rake::RDocTask.new do |rd|
   rd.rdoc_files.include("lib/**/*.rb")
 end
 
+def sudo_wrapper(command)
+  `whoami`.strip! == "root" ? "sudo #{command}" : command
+end
+
 task :install => :package do
-  sh %{sudo gem install pkg/#{GEM}-#{CHEF_VERSION} --no-rdoc --no-ri}
+  sh sudo_wrapper(%{gem install pkg/#{GEM}-#{CHEF_VERSION} --no-rdoc --no-ri})
 end
 
 task :uninstall do
-  sh %{sudo gem uninstall #{GEM} -x -v #{CHEF_VERSION} }
+  sh sudo_wrapper(%{gem uninstall #{GEM} -x -v #{CHEF_VERSION} })
 end
 
 desc "create a gemspec file"
